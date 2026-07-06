@@ -17,12 +17,8 @@ ansible_user_home: "/home/{{ ansible_user }}"
 # =============================================================================
 # SSH & SECURITY CONFIGURATION
 # =============================================================================
-# SSH settings for remote access and key management
+# SSH keys are managed manually on each host; Ansible does not deploy them.
 security_ssh_password_authentication: "yes"
-security_ssh_authorized_keys:
-  - "{{ ssh_hosts.apple.ssh_public_key.public_key }}" # Allow apple access
-security_ssh_private_key: "{{ ssh_hosts.apple.ssh_private_key.private_key }}"
-security_ssh_public_key: "{{ ssh_hosts.apple.ssh_public_key.public_key }}"
 security_sudoers_passwordless:
   - "{{ ansible_user }}"
   - "root"
@@ -63,22 +59,7 @@ apt_install:
   - nfs-common
   - cifs-utils
   - nfs-kernel-server
-
-# =============================================================================
-# GIT CONFIGURATION
-# =============================================================================
-# Development-focused Git settings for desktop workflow
-git_user_name: "{{ git.user_name }}"
-git_email: "{{ git.email }}" # Defined in vault/secrets.yml
-
-git_settings:
-  editor: "nano" # Lightweight editor for commits
-  use_github_cli: true # Enable GitHub CLI integration
-  github_cli_path: "/usr/bin/gh" # GitHub CLI binary location
-  use_ssh: true # Prefer SSH for Git operations
-  pull_rebase: false # Use merge strategy for pulls
-  push_default: "simple" # Conservative push behavior
-  auto_setup_remote: true # Automatically configure remotes
+  - chroma
 
 docker_users:
   - "{{ ansible_user }}" # Primary user Docker access
@@ -92,3 +73,35 @@ user_paths:
   - "{{ ansible_user_home }}/backups/daily" # Daily backup rotation
   - "{{ ansible_user_home }}/backups/weekly" # Weekly backup retention
   - "{{ ansible_user_home }}/backups/monthly" # Monthly backup archives
+
+oh_my_zsh_theme: crush
+oh_my_zsh_update_mode: auto
+users:
+  - username: "{{ ansible_user }}"
+    oh_my_zsh:
+      theme: crush
+      update_mode: auto
+      update_frequency: 7
+      write_zshrc: true
+  - username: "root"
+    oh_my_zsh:
+      theme: crush
+      update_mode: auto
+      update_frequency: 7
+      write_zshrc: true
+
+oh_my_zsh_plugins:
+  - aliases
+  - ansible
+  - colorize
+  - common-aliases
+  - docker
+  - docker-compose
+  - dotenv
+  - git
+  - github
+  - history
+  - python
+  - uv
+  - ssh
+  - ubuntu

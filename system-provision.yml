@@ -3,43 +3,39 @@
   hosts: linux
   become: true
   vars_files:
-    - ../vault/secrets.yml
+    - vault/secrets.yml
   tasks:
     - name: Install basics
-      ansible.builtin.include_tasks: ../tasks/install-basics.yml
+      ansible.builtin.include_tasks: tasks/linux.yml
   roles:
     - role: geerlingguy.security
-      when: ansible_facts['os_family'] != "Darwin" or security_apply_to_darwin | default(false)
 
 - name: Setup SSH
   hosts: linux
   become: true
   vars_files:
-    - ../vault/secrets.yml
-  tasks:
-    - name: Deploy SSH client config
-      ansible.builtin.include_tasks: ../tasks/config-ssh.yml
+    - vault/secrets.yml
+  pre_tasks:
+    - name: Remove GitHub HTTPS to SSH rewrite before zsh install
+      ansible.builtin.include_tasks: tasks/github-remove-ssh-rewrite.yml
+    - name: Configure GitHub SSH host keys
+      ansible.builtin.include_tasks: tasks/github-known-hosts.yml
+      when: git_settings.use_ssh | default(false)
+    - name: Remove stale root antigen install
+      ansible.builtin.file:
+        path: /root/.antigen
+        state: absent
+      when: zsh_user != 'root'
   roles:
     - role: viasite-ansible.zsh
-
-- name: Setup File Mounts
-  hosts: linux
-  become: true
-  vars_files:
-    - ../vault/secrets.yml
-  pre_tasks:
-    - name: Configure file system mounts
-      ansible.builtin.include_tasks: ../tasks/file-mounts.yml
-      when: host_storage is defined
-  roles:
-    - role: geerlingguy.nfs
-      tags: [storage, mounts]
+      environment:
+        HOME: "{{ ansible_user_home }}"
 
 - name: Setup Docker
   hosts: docker
   become: true
   vars_files:
-    - ../vault/secrets.yml
+    - vault/secrets.yml
   roles:
     - role: geerlingguy.docker
       become: true
@@ -49,7 +45,7 @@
   hosts: linux
   become: true
   vars_files:
-    - ../vault/secrets.yml
+    - vault/secrets.yml
   roles:
     - role: geerlingguy.firewall
       when: firewall_enabled | default(true)
