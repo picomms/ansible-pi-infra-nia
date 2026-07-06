@@ -1,0 +1,19 @@
+---
+exclude_paths:
+  - .git/
+  - .github/
+  - .vscode/
+  - .ansible/
+  - _reference/
+  - mkdocs.yml
+  - .vscode/settings.json
+
+skip_list:
+  - command-instead-of-module # Allow git commands where no direct module exists
+  - risky-file-permissions # Allow file operations without explicit permissions
+  - latest[git] # Allow git operations that may vary
+
+warn_list:
+  - yaml[line-length]
+  - yaml[truthy]
+  - fqcn[canonical]

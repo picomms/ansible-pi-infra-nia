@@ -1,0 +1,14 @@
+all:
+  children:
+    linux:
+      hosts:
+        apple:
+        cherry:
+    ubuntu:
+      hosts:
+        apple:
+        cherry:
+    docker:
+      hosts:
+        apple:
+        cherry:

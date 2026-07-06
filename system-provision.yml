@@ -1,0 +1,55 @@
+---
+- name: Setup System Provisioning
+  hosts: linux
+  become: true
+  vars_files:
+    - ../vault/secrets.yml
+  tasks:
+    - name: Install basics
+      ansible.builtin.include_tasks: ../tasks/install-basics.yml
+  roles:
+    - role: geerlingguy.security
+      when: ansible_facts['os_family'] != "Darwin" or security_apply_to_darwin | default(false)
+
+- name: Setup SSH
+  hosts: linux
+  become: true
+  vars_files:
+    - ../vault/secrets.yml
+  tasks:
+    - name: Deploy SSH client config
+      ansible.builtin.include_tasks: ../tasks/config-ssh.yml
+  roles:
+    - role: viasite-ansible.zsh
+
+- name: Setup File Mounts
+  hosts: linux
+  become: true
+  vars_files:
+    - ../vault/secrets.yml
+  pre_tasks:
+    - name: Configure file system mounts
+      ansible.builtin.include_tasks: ../tasks/file-mounts.yml
+      when: host_storage is defined
+  roles:
+    - role: geerlingguy.nfs
+      tags: [storage, mounts]
+
+- name: Setup Docker
+  hosts: docker
+  become: true
+  vars_files:
+    - ../vault/secrets.yml
+  roles:
+    - role: geerlingguy.docker
+      become: true
+      tags: [docker]
+
+- name: Setup Firewall
+  hosts: linux
+  become: true
+  vars_files:
+    - ../vault/secrets.yml
+  roles:
+    - role: geerlingguy.firewall
+      when: firewall_enabled | default(true)
