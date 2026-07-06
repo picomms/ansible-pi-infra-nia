@@ -10,26 +10,12 @@
   roles:
     - role: geerlingguy.security
 
-- name: Setup SSH
+- name: Setup Oh My Zsh
   hosts: linux
-  become: true
   vars_files:
     - vault/secrets.yml
-  pre_tasks:
-    - name: Remove GitHub HTTPS to SSH rewrite before zsh install
-      ansible.builtin.include_tasks: tasks/github-remove-ssh-rewrite.yml
-    - name: Configure GitHub SSH host keys
-      ansible.builtin.include_tasks: tasks/github-known-hosts.yml
-      when: git_settings.use_ssh | default(false)
-    - name: Remove stale root antigen install
-      ansible.builtin.file:
-        path: /root/.antigen
-        state: absent
-      when: zsh_user != 'root'
   roles:
-    - role: viasite-ansible.zsh
-      environment:
-        HOME: "{{ ansible_user_home }}"
+    - role: gantsign.oh-my-zsh
 
 - name: Setup Docker
   hosts: docker

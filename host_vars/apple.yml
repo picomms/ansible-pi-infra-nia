@@ -74,18 +74,18 @@ user_paths:
   - "{{ ansible_user_home }}/backups/weekly" # Weekly backup retention
   - "{{ ansible_user_home }}/backups/monthly" # Monthly backup archives
 
-oh_my_zsh_theme: crush
+oh_my_zsh_theme: crunch
 oh_my_zsh_update_mode: auto
 users:
   - username: "{{ ansible_user }}"
     oh_my_zsh:
-      theme: crush
+      theme: crunch
       update_mode: auto
       update_frequency: 7
       write_zshrc: true
   - username: "root"
     oh_my_zsh:
-      theme: crush
+      theme: crunch
       update_mode: auto
       update_frequency: 7
       write_zshrc: true
