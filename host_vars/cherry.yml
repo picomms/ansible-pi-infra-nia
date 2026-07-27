@@ -2,9 +2,9 @@
 # =============================================================================
 # CONNECTION & AUTHENTICATION
 # =============================================================================
-ansible_host: "{{ ssh_hosts.cherry.ip }}"
+# ansible_host: "{{ ssh_hosts.cherry.ip }}"
 ansible_user: "{{ ssh_hosts.cherry.user }}"
-ansible_connection: ssh
+ansible_connection: local
 ansible_become_user: root
 ansible_become_pass: "{{ ssh_hosts.cherry.password }}"
 
